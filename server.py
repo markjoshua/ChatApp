@@ -38,6 +38,39 @@ class ChatServer(dispatcher):
 	def handle_accept(self):
 		conn, addr = self.accept()
 		self.sessions.append(ChatSession(self, conn))
+class CommandHandler:
+	def unknown(self, session, cmd):
+		session.push('Unknown command %s \r\n' %cmd)
+	def handle(self, cmd):
+		if not line.strip():
+			return
+		parts = line.split(' ', 1)
+		cmd = parts[0]
+		try:
+			line = parts[1].strip()
+		except IndexError:
+			line = ''
+		meth = getattr(self, 'do_' + cmd, None)
+		try:
+			meth(session, line)
+		except TypeError:
+			self.unknown(session, cmd)
+class EndSession(Exception):
+	pass
+class Room(CommandHandler):
+	def __init__(self, server):
+		self.server = server
+		self.sessions = []
+	def add(self, session):
+		self.sessions.append(session)
+	def remove(self, session):
+		self.sessions.remove(session)
+	def broadcast(self, line):
+		for session in self.sessions:
+			session.push(line)
+
+	def do_logout(self, session, line):
+		raise EndSession
 if __name__ == '__main__':
 	s = ChatServer(PORT, NAME)
 	asyncore.loop()
