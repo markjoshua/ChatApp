@@ -6,4 +6,4 @@ A simple chat program based on python.
 
 
 Screenshot:<br>
-![](https://github.com/fish267/ChatApp/blob/master/Screenshot.png)
+![](https://raw.github.com/fish267/ChatApp/master/Screenshot.png)
